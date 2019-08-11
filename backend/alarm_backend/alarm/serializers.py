@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import CronJob
+from alarm.models import CronJob, Command, AlarmStatus
 
 
 class CronJobSerializer(serializers.ModelSerializer):
@@ -27,7 +27,7 @@ class CronJobSerializer(serializers.ModelSerializer):
         return value
 
     @staticmethod
-    def _validate_num_in_range(val: str, low_range: int, upper_range):
+    def _validate_num_in_range(val: str, low_range: int, upper_range: int):
         try:
             int(val)
         except ValueError:
@@ -36,3 +36,16 @@ class CronJobSerializer(serializers.ModelSerializer):
         num = int(val)
         if not (low_range <= num <= upper_range):
             raise serializers.ValidationError(f"Provided value is not within {low_range}-{upper_range} range")
+
+
+class CommandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Command
+        fields = ["id", "script_name"]
+
+
+class AlarmStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AlarmStatus
+        fields = ["id", "is_active"]
+

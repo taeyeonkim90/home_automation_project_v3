@@ -21,6 +21,6 @@ from alarm import urls as alarm_urls
 
 
 urlpatterns = [
-    path("", include(alarm_urls.urlpatterns)),
+    path("api/", include(alarm_urls.urlpatterns)),
     path('admin/', admin.site.urls),
 ]
