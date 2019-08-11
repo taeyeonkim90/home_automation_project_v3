@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 django = "==2.2.4"
 djangorestframework = "*"
+python-crontab = "*"
 
 [requires]
 python_version = "3.7"

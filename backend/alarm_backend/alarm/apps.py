@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class AlarmConfig(AppConfig):
-    name = 'api'
+    name = 'alarm'
