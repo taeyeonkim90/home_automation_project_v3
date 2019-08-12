@@ -1,12 +1,12 @@
 from rest_framework import serializers
 
-from alarm.models import CronJob, Command, AlarmStatus
+from alarm.models import CronJob, Command
 
 
 class CronJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = CronJob
-        fields = ["id", "minute", "hour", "day_of_month", "month", "day_of_week", "command"]
+        fields = ["id", "minute", "hour", "day_of_month", "month", "day_of_week", "command", "is_active"]
 
     def validate_minute(self, value):
         self._validate_num_in_range(value, 0, 59)
@@ -42,10 +42,4 @@ class CommandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Command
         fields = ["id", "name", "target_file"]
-
-
-class AlarmStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AlarmStatus
-        fields = ["id", "is_active"]
 

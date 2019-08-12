@@ -1,10 +1,6 @@
 from django.db import models
 
 
-class AlarmStatus(models.Model):
-    is_active = models.BooleanField(default=False)
-
-
 class Command(models.Model):
     name = models.CharField(max_length=100)
     target_file = models.CharField(max_length=100)
@@ -20,4 +16,5 @@ class CronJob(models.Model):
     month = models.CharField(max_length=20, default="*")
     day_of_week = models.CharField(max_length=20, default="*")
     command = models.ForeignKey(Command, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=False)
 

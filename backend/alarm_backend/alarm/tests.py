@@ -7,6 +7,7 @@ from rest_framework.exceptions import ValidationError
 from crontab import CronTab
 
 from alarm.services.cron import CrontabService, CronJobParser
+from alarm.services.script import ScriptService
 from alarm.services.alarm import AlarmService
 from alarm.serializers import CronJobSerializer
 from alarm.models import CronJob, Command
@@ -129,8 +130,9 @@ class CronJobParserTest(TestCase):
 class AlarmServiceTest(TestCase):
     def setUp(self) -> None:
         crontab_service = CrontabService()
+        script_service = ScriptService()
         parser = CronJobParser()
-        self.alarm_service = AlarmService(crontab_service, parser)
+        self.alarm_service = AlarmService(crontab_service, script_service, parser)
 
         self._create_test_fixture()
         self._clear_crontab()
@@ -150,7 +152,7 @@ class AlarmServiceTest(TestCase):
         command.save()
 
         for i in range(10):
-            job = CronJob(command=command)
+            job = CronJob(command=command, is_active=True)
             job.save()
 
     def _clear_crontab(self):

@@ -3,17 +3,6 @@
 from django.db import migrations, models
 
 
-def add_alarm_status(apps, schema_editor):
-    AlarmStatus = apps.get_model("alarm", "AlarmStatus")
-    AlarmStatus(is_active=False).save()
-
-
-def delete_alarm_status(apps, schema_editor):
-    AlarmStatus = apps.get_model("alarm", "AlarmStatus")
-    for obj in AlarmStatus.objects.all():
-        obj.delete()
-
-
 def add_commands(apps, schema_editor):
     Command = apps.get_model("alarm", "Command")
     Command(name="testing script", target_file="test_script.py").save()
@@ -33,10 +22,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(
-            add_alarm_status,
-            reverse_code=delete_alarm_status
-        ),
         migrations.RunPython(
             add_commands,
             reverse_code=delete_commands
