@@ -41,7 +41,7 @@ class CronJobSerializer(serializers.ModelSerializer):
 class CommandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Command
-        fields = ["id", "script_name"]
+        fields = ["id", "name", "target_file"]
 
 
 class AlarmStatusSerializer(serializers.ModelSerializer):

@@ -3,9 +3,11 @@ import shutil
 from typing import Dict
 
 from django.test import TestCase
+from rest_framework.exceptions import ValidationError
 from crontab import CronTab
 
-from alarm.services import CrontabService, CronJobParser, AlarmService
+from alarm.services.cron import CrontabService, CronJobParser
+from alarm.services.alarm import AlarmService
 from alarm.serializers import CronJobSerializer
 from alarm.models import CronJob, Command
 
@@ -28,8 +30,8 @@ class CronJobSerializerTest(TestCase):
             model.delete()
 
     def _create_test_fixture(self):
-        command = Command(script_name="name",
-                          script_path="path")
+        command = Command(name="name",
+                          target_file="path")
         command.save()
 
     def test_minute_validation(self):
@@ -48,7 +50,8 @@ class CronJobSerializerTest(TestCase):
             self._generate_data("a", "1", "1", "1"),
         ]
         for data in data_list:
-            self._test_validation_fail(data)
+            with self.assertRaises(ValidationError):
+                self._test_validation(data)
 
     def test_hour_validation(self):
         data_list = [
@@ -66,7 +69,8 @@ class CronJobSerializerTest(TestCase):
             self._generate_data("1", "a", "1", "1"),
         ]
         for data in data_list:
-            self._test_validation_fail(data)
+            with self.assertRaises(ValidationError):
+                self._test_validation(data)
 
     def test_day_of_week_validation(self):
         data_list = [
@@ -87,7 +91,8 @@ class CronJobSerializerTest(TestCase):
             self._generate_data("1", "1", "1", ",1"),
         ]
         for data in data_list:
-            self._test_validation_fail(data)
+            with self.assertRaises(ValidationError):
+                self._test_validation(data)
 
     def _generate_data(self, minute: str, hour: str, day_of_month: str, day_of_week: str) -> Dict[str, str]:
         command = Command.objects.all()[0]
@@ -101,11 +106,7 @@ class CronJobSerializerTest(TestCase):
 
     def _test_validation(self, data: dict):
         serializer = CronJobSerializer(data=data)
-        self.assertTrue(serializer.is_valid())
-
-    def _test_validation_fail(self, data: dict):
-        serializer = CronJobSerializer(data=data)
-        self.assertFalse(serializer.is_valid())
+        self.assertTrue(serializer.is_valid(raise_exception=True))
 
 
 class CronJobParserTest(TestCase):
@@ -118,11 +119,11 @@ class CronJobParserTest(TestCase):
         self.assertEqual(schedule, "* * * * *")
 
     def test_get_command(self):
-        command = Command(script_name="name",
-                          script_path="path")
+        command = Command(name="name",
+                          target_file="path")
         job = CronJob(command=command)
         command = self.parser.get_command(job)
-        self.assertEqual(command, "path")
+        self.assertTrue(command.endswith("path"))
 
 
 class AlarmServiceTest(TestCase):
@@ -132,6 +133,7 @@ class AlarmServiceTest(TestCase):
         self.alarm_service = AlarmService(crontab_service, parser)
 
         self._create_test_fixture()
+        self._clear_crontab()
 
     def tearDown(self) -> None:
         for model in CronJob.objects.all():
@@ -140,17 +142,21 @@ class AlarmServiceTest(TestCase):
         for model in Command.objects.all():
             model.delete()
 
-        crontab = CronTab(user=True)
-        crontab.remove_all()
+        self._clear_crontab()
 
     def _create_test_fixture(self):
-        command = Command(script_name="name",
-                          script_path="path")
+        command = Command(name="name",
+                          target_file="path")
         command.save()
 
         for i in range(10):
             job = CronJob(command=command)
             job.save()
+
+    def _clear_crontab(self):
+        crontab = CronTab(user=True)
+        crontab.remove_all()
+        crontab.write()
 
     def test_update_all_alarms(self):
         crontab = CronTab(user=True)

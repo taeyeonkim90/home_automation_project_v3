@@ -6,8 +6,11 @@ class AlarmStatus(models.Model):
 
 
 class Command(models.Model):
-    script_name = models.CharField(max_length=100)
-    script_path = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    target_file = models.CharField(max_length=100)
+
+    def __str_(self):
+        return f"{self.name}: {self.target_file}"
 
 
 class CronJob(models.Model):

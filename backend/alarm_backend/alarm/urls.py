@@ -6,6 +6,7 @@ from alarm import views
 router = routers.DefaultRouter()
 router.register("alarms", views.AlarmViewSet)
 router.register("commands", views.CommandViewSet)
+router.register("alarm_statuses", views.AlarmStatusViewSet)
 
 
 urlpatterns = [
