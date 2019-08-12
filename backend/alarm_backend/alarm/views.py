@@ -44,14 +44,3 @@ class AlarmStatusViewSet(viewsets.ModelViewSet):
         serializer.save()
         if not serializer.validated_data.get("is_active"):
             self.script_service.kill_all_scripts()
-
-"""
-TODO:
-    1. !on CRUD, after each operation, repopulate crontab -> need crontab service -> delete and update
-    2. !alarm on/off alarm endpoint: update only
-       need kill command
-    3. !command get list: only get list
-    4. !script -> lock file
-    5. fixture. single alarm_status + multiple commands
-
-"""

@@ -17,10 +17,10 @@ from django.conf.urls import include
 from django.contrib import admin
 from django.urls import path
 
-from alarm import urls as alarm_urls
+from api import urls as api_urls
 
 
 urlpatterns = [
-    path("api/", include(alarm_urls.urlpatterns)),
+    path("api/", include(api_urls.urlpatterns)),
     path('admin/', admin.site.urls),
 ]
